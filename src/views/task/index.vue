@@ -77,6 +77,8 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, provide } from "vue";
+
 import { useRouter } from "vue-router";
 import TaskList from "@/components/list/TaskList.vue";
 import Banner from "./components/Banner.vue";
@@ -102,9 +104,70 @@ const state = reactive({
   loading: false,
   taskList: [],
 });
-import { reactive } from "vue";
 
-const taskList = reactive([{ id: 1 }, { id: 2 }]);
+const getTaskAllList = async () => {
+  state.loading = true;
+  if (state.pageNum == 1) state.taskList = [];
+  const res: any = await taskAllList({
+    position_name: state.positionValue,
+    service_mode: state.serviceMode,
+    task_cycle: state.taskCycle,
+    pageNum: state.pageNum,
+    pageSize: state.pageSize,
+    city: store.cityValue,
+  });
+  if (res) {
+    state.taskList = state.taskList.concat(res.records);
+    state.loading = false;
+    if (state.taskList.length >= res.total) {
+      state.finished = true;
+    } else {
+      state.finished = false;
+    }
+  } else {
+    showToast(res.msg);
+    state.loading = false;
+  }
+};
+const gotoSearch = () => {
+  router.push("/task/search");
+};
+const onLoad = () => {
+  state.pageNum = state.pageNum + 1;
+  getTaskAllList();
+};
+const onRefresh = () => {
+  state.pageNum = 1;
+  getTaskAllList();
+};
+
+const closeCitySwitch = (name: any) => {
+  if (name) {
+    store.setCityValue(name);
+    onRefresh();
+  }
+  state.citySwitchBool = false;
+};
+const closePositionType = (name: any) => {
+  if (name) {
+    state.positionValue = name;
+    onRefresh();
+  }
+  state.positionTypeBool = false;
+};
+const closeScreen = (obj: any) => {
+  if (obj) {
+    state.serviceMode = obj.mode;
+    state.taskCycle = obj.cycle;
+    onRefresh();
+  }
+  state.screenBool = false;
+};
+provide("popup", {
+  closeCitySwitch,
+  closePositionType,
+  closeScreen,
+});
 </script>
 
 <style scoped>

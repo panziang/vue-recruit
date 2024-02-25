@@ -4,6 +4,7 @@ import { taskStore } from "@/store/task";
 const { closeCitySwitch } = inject("popup") as any;
 const store: any = taskStore();
 const leftBack = () => closeCitySwitch();
+// const leftBack = () => history.back();
 if (store.cityList.length <= 0) store.getCityList();
 </script>
 <template>

@@ -1,7 +1,48 @@
+<script setup lang="ts">
+import { inject } from "vue";
+import { bannerList } from "@/api/task";
+import { taskStore } from "@/store/task";
+import { showToast } from "vant";
+const { closeCitySwitch } = inject("popup") as any;
+const store: any = taskStore();
+const props = defineProps({
+  type: {
+    type: Number,
+  },
+});
+const leftBack = () => closeCitySwitch();
+const getBannerList = async () => {
+  const res: any = await bannerList({
+    type: props.type,
+  });
+  if (res) {
+    store.setBannerList(res.list);
+  } else {
+    showToast(res.msg);
+  }
+};
+if (store.bannerList.length <= 0) getBannerList();
+</script>
 <template>
-  <div>123</div>
+  <van-swipe :autoplay="3000" lazy-render>
+    <van-swipe-item v-for="(item, index) in store.bannerList" :key="index">
+      <a :href="item.url" target="_blank" v-if="item.url">
+        <img :src="item.picture" />
+      </a>
+      <img v-else="item.url" :src="item.picture" />
+    </van-swipe-item>
+  </van-swipe>
 </template>
-
-<script setup lang="ts"></script>
-
-<style scoped></style>
+<style scoped>
+/* /* :deep(.van-swipe__track) {
+  height: 7.47rem;
+}  */
+:deep(.van-swipe__indicators) {
+  display: none;
+}
+img {
+  width: 100%;
+  height: 7.47rem;
+  border-radius: 0.5rem;
+}
+</style>
