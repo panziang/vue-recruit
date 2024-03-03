@@ -55,7 +55,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/message/systemDetails/:id",
     component: () => import("@/views/message/systemDetails.vue"),
   },
-
+  {
+    path: "/message/talk/:taskId/:userId",
+    component: () => import("@/views/message/talk.vue"),
+  },
+  {
+    path: "/message/talent/:resumeId/:userId",
+    component: () => import("@/views/message/talent.vue"),
+  },
   {
     path: "/my",
     component: () => import("@/views/my/index.vue"),
